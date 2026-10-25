@@ -1,0 +1,36 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Sprite preview</title>
+<style>
+  body { margin: 0; padding: 12px; background: #f3efe6; font: 12px monospace; color: #1a1c2c; }
+  .grid { display: flex; flex-wrap: wrap; gap: 10px; }
+  .cell { background: #fff; border: 1px solid #ccc; padding: 6px; text-align: center; }
+  canvas { image-rendering: pixelated; display: block; margin: 0 auto 4px; }
+  .row { display: flex; gap: 6px; align-items: end; }
+</style>
+<div class="grid" id="grid"></div>
+<script src="../sprites.js"></script>
+<script src="../sprites_hd.js"></script>
+<script>
+  // ?only=a,b limits the sheet; ?old=1 shows the 16x16 version beside each new one.
+  const q = new URLSearchParams(location.search);
+  const names = q.get("only") ? q.get("only").split(",") : Object.keys(SPRH);
+  const big = +(q.get("z") || 5);
+  for (const n of names) {
+    const cell = document.createElement("div"); cell.className = "cell";
+    const row = document.createElement("div"); row.className = "row";
+    const add = (src, scale, bg) => {
+      const c = document.createElement("canvas"); c.width = src.width * scale; c.height = src.height * scale;
+      const x = c.getContext("2d"); x.imageSmoothingEnabled = false;
+      if (bg) { x.fillStyle = bg; x.fillRect(0, 0, c.width, c.height); }
+      x.drawImage(src, 0, 0, c.width, c.height); row.appendChild(c);
+    };
+    add(spriteCanvas(n), big, "#e8f4ff");
+    add(spriteCanvas(n), 2, "#38b764");
+    if (q.get("blink")) add(spriteCanvas(n, { blink: true }), big, "#e8f4ff");
+    if (q.get("old")) { const o = document.createElement("canvas"); o.width = o.height = 32; o.getContext("2d").drawImage(spriteCanvas("old-" + n, { rows: double(SPR[n] || SPR.rat) }), 0, 0); add(o, 2, "#38b764"); }
+    cell.appendChild(row);
+    cell.appendChild(document.createTextNode(n));
+    document.getElementById("grid").appendChild(cell);
+  }
+</script>

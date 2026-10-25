@@ -1,0 +1,7 @@
+# Build copies (index.html is the one that gets published)
+kingdom-animalia.html
+Kingdom Animalia.html
+# One-off patch scripts from the first night, already folded into game.js
+gfx_helpers.js
+upgrade_gfx.py
+__pycache__/
